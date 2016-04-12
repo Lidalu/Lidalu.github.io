@@ -4,52 +4,30 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>文章标题 | 李大大大帅</title>
+  <title>iOS开发技巧第一弹:PCH文件配置 | 李大大大帅</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="由于StoryBoard故事板对Tabbar的tinColor更改无效，因此自定义一个可视化类，方便StoryBoard对Tabbar的开发，提高StoryBoard的开发效率。先看下效果：
+  <meta name="description" content="任何开发过程中，都可能会有所有文件都需要导入的包或者头文件，为了提高开发效率，我们可以配置PCH文件
 
-
-
-自定义一个可视化类
-LLuTabBarTintColor.h
-#import &amp;lt;UIKit/UIKit.h&amp;gt;
-
-IB_DESIGNABLE  // 动态刷新
-
-@interface LLuT">
+XX_Prefix.pch:扩展名.pch表示“precompiled header”
+这是一个你工程里要用到的来自于外部框架的头文件列表。Xcode将编译这些头文件，这将减少你在选择Build和Build and Go时编译项目的时间。通常用到的头文件已经自动包含了pch，系统编译每一个.m文">
 <meta property="og:type" content="article">
-<meta property="og:title" content="文章标题">
-<meta property="og:url" content="http://www.lidalu1125.cn/2015/10/12/文章标题/index.html">
+<meta property="og:title" content="iOS开发技巧第一弹:PCH文件配置">
+<meta property="og:url" content="http://www.lidalu1125.cn/2015/12/23/iOS开发技巧第一弹-PCH文件配置/index.html">
 <meta property="og:site_name" content="李大大大帅">
-<meta property="og:description" content="由于StoryBoard故事板对Tabbar的tinColor更改无效，因此自定义一个可视化类，方便StoryBoard对Tabbar的开发，提高StoryBoard的开发效率。先看下效果：
+<meta property="og:description" content="任何开发过程中，都可能会有所有文件都需要导入的包或者头文件，为了提高开发效率，我们可以配置PCH文件
 
-
-
-自定义一个可视化类
-LLuTabBarTintColor.h
-#import &amp;lt;UIKit/UIKit.h&amp;gt;
-
-IB_DESIGNABLE  // 动态刷新
-
-@interface LLuT">
-<meta property="og:image" content="http://img.blog.csdn.net/20160224094356252">
-<meta property="og:image" content="http://img.blog.csdn.net/20160224094512037">
-<meta property="og:image" content="http://img.blog.csdn.net/20160224094538835">
-<meta property="og:updated_time" content="2016-04-12T02:41:45.000Z">
+XX_Prefix.pch:扩展名.pch表示“precompiled header”
+这是一个你工程里要用到的来自于外部框架的头文件列表。Xcode将编译这些头文件，这将减少你在选择Build和Build and Go时编译项目的时间。通常用到的头文件已经自动包含了pch，系统编译每一个.m文">
+<meta property="og:image" content="http://img.blog.csdn.net/20160115132659080">
+<meta property="og:image" content="http://img.blog.csdn.net/20160115132715276">
+<meta property="og:updated_time" content="2016-04-12T02:50:02.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="文章标题">
-<meta name="twitter:description" content="由于StoryBoard故事板对Tabbar的tinColor更改无效，因此自定义一个可视化类，方便StoryBoard对Tabbar的开发，提高StoryBoard的开发效率。先看下效果：
+<meta name="twitter:title" content="iOS开发技巧第一弹:PCH文件配置">
+<meta name="twitter:description" content="任何开发过程中，都可能会有所有文件都需要导入的包或者头文件，为了提高开发效率，我们可以配置PCH文件
 
-
-
-自定义一个可视化类
-LLuTabBarTintColor.h
-#import &amp;lt;UIKit/UIKit.h&amp;gt;
-
-IB_DESIGNABLE  // 动态刷新
-
-@interface LLuT">
-<meta name="twitter:image" content="http://img.blog.csdn.net/20160224094356252">
+XX_Prefix.pch:扩展名.pch表示“precompiled header”
+这是一个你工程里要用到的来自于外部框架的头文件列表。Xcode将编译这些头文件，这将减少你在选择Build和Build and Go时编译项目的时间。通常用到的头文件已经自动包含了pch，系统编译每一个.m文">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160115132659080">
   
     <link rel="alternative" href="/atom.xml" title="李大大大帅" type="application/atom+xml">
   
@@ -221,11 +199,11 @@ IB_DESIGNABLE  // 动态刷新
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="post-文章标题" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-iOS开发技巧第一弹-PCH文件配置" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/10/12/文章标题/" class="article-date">
-  	<time datetime="2015-10-12T02:36:21.000Z" itemprop="datePublished">2015-10-12</time>
+      <a href="/2015/12/23/iOS开发技巧第一弹-PCH文件配置/" class="article-date">
+  	<time datetime="2015-12-22T17:38:12.000Z" itemprop="datePublished">2015-12-23</time>
 </a>
     </div>
   
@@ -238,7 +216,7 @@ IB_DESIGNABLE  // 动态刷新
         
   
     <h1 class="article-title" itemprop="name">
-      文章标题
+      iOS开发技巧第一弹:PCH文件配置
     </h1>
   
 
@@ -254,53 +232,17 @@ IB_DESIGNABLE  // 动态刷新
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>由于StoryBoard故事板对Tabbar的tinColor更改无效，因此自定义一个可视化类，方便StoryBoard对Tabbar的开发，提高StoryBoard的开发效率。<br>先看下效果：</p>
-<p><img src="http://img.blog.csdn.net/20160224094356252" alt="storyboard面板"></p>
-<p><img src="http://img.blog.csdn.net/20160224094512037" alt="运行结果"></p>
-<p><img src="http://img.blog.csdn.net/20160224094538835" alt="storyboard所拖拽的Tabbar所属自定义类"></p>
-<p><strong>自定义一个可视化类</strong></p>
-<p><em>LLuTabBarTintColor.h</em></p>
-<pre><code>#import &lt;UIKit/UIKit.h&gt;
+        <p><strong>任何开发过程中，都可能会有所有文件都需要导入的包或者头文件，为了提高开发效率，我们可以配置PCH文件</strong></p>
+<ul>
+<li>XX_Prefix.pch:扩展名.pch表示“precompiled header”</li>
+<li>这是一个你工程里要用到的来自于外部框架的头文件列表。Xcode将编译这些头文件，这将减少你在选择Build和Build and Go时编译项目的时间。通常用到的头文件已经自动包含了pch，系统编译每一个.m文件前，都会先#import这个文件。这样就节省了添加#include的时间，相当于加速编译</li>
+<li>还有就是可以在这个pch文件中放入宏，在整个工程中都可以用</li>
+<li>例如在一个项目中有一个hello.h文件，需要在所有.m文件中都要包含这个文件就可以在XX_Prefix.pch文件中引入hello.h</li>
+</ul>
+<p><strong>具体配置过程:</strong><br>在项目里的Build Setting中选择combine，并在输入框中输入prefix，下面进行pch文件路径配置<br><img src="http://img.blog.csdn.net/20160115132659080" alt="这里写图片描述"><br><img src="http://img.blog.csdn.net/20160115132715276" alt="这里写图片描述"></p>
+<p><strong><em>注意: $(SRCROOT)/后面是项目的相对路径。</em></strong></p>
+<p>最后，编译下工程，Build Success，发现公共的头文件或者宏定义只需要在pch文件中导入了就好使。</p>
 
-IB_DESIGNABLE  // 动态刷新
-
-@interface LLuTabBarTintColor : UITabBar
-
-// 注意: 加上IBInspectable就可以可视化显示相关的属性哦
-
-/** 可视化tabBar点击时颜色 */
-@property (nonatomic, strong)IBInspectable UIColor *TabBartintColor;
-
-@end`
-</code></pre><p><em>LLuTabBarTintColor.m</em></p>
-<pre><code>#import &quot;LLuTabBarTintColor.h&quot;
-
-@implementation LLuTabBarTintColor
-
-/**
- *  设置tabBar的tintColor
- *
- *  @param TabBartintColor 可视化视图传入的值
- */
-- (void)setTabBartintColor:(UIColor *)TabBartintColor {
-
-    self.tintColor = TabBartintColor;
-}
-
-@end
-</code></pre><p><strong>使用方法</strong></p>
-<p>IB_DESIGNABLE</p>
-<pre><code>使用方法：在swift里，@IBDesignable关键字写在class前即可。 
-在OC里，是IB_DESIGNABLE这个关键字，写在@implementation前即可 
-IBInspectable 
-主要作用：使view内的变量可视化，并且可以修改后马上看到
-</code></pre><p>IBInspectable</p>
-<pre><code>使用方法：在swift里，@IBInspectable关键字写在需要显示的变量前即可 
-在OC里，是IBInspectable这个关键字，写在需要显示的变量前即可 
-另外附两个快捷键： 
-command+shift+O，快速打开需要的文件 
-control+shift+鼠标左击sb，可以选择需要的sb活着view
-</code></pre>
       
     </div>
     
@@ -309,18 +251,18 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
     
 <nav id="article-nav">
   
-    <a href="/2015/12/23/iOS开发技巧第一弹-PCH文件配置/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2016/01/04/键值观察KVO详解/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          iOS开发技巧第一弹:PCH文件配置
+          键值观察KVO详解
         
       </div>
     </a>
   
   
-    <a href="/2015/08/26/load和initialize方法详解/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">load和initialize方法详解</div>
+    <a href="/2015/10/12/文章标题/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">文章标题</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -355,7 +297,7 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="文章标题" data-title="文章标题" data-url="http://www.lidalu1125.cn/2015/10/12/文章标题/"></div>
+	<div class="ds-thread" data-thread-key="iOS开发技巧第一弹-PCH文件配置" data-title="iOS开发技巧第一弹:PCH文件配置" data-url="http://www.lidalu1125.cn/2015/12/23/iOS开发技巧第一弹-PCH文件配置/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
