@@ -4,17 +4,31 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>李大大大帅</title>
+  <title>load和initialize方法详解 | 李大大大帅</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="李大大大帅">
-<meta property="og:url" content="http://www.lidalu1125.cn/index.html">
+  <meta name="description" content="本篇文章来详细讲解下NSObject.h中的+(void)load 和 + (void)initialize两个方法。
+Objective-C作为一门面向对象语言，有类和对象的概念。编译后，类相关的数据结构会保留在目标文件中，在运行时得到解析和使用。在应用程序运行起来的时候，类的信息会有加载和初始化过程。
+12+ (void)load;+ (void)initialize;
+都是以“+”开头的类方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="load和initialize方法详解">
+<meta property="og:url" content="http://www.lidalu1125.cn/2015/08/26/load和initialize方法详解/index.html">
 <meta property="og:site_name" content="李大大大帅">
-<meta property="og:description">
+<meta property="og:description" content="本篇文章来详细讲解下NSObject.h中的+(void)load 和 + (void)initialize两个方法。
+Objective-C作为一门面向对象语言，有类和对象的概念。编译后，类相关的数据结构会保留在目标文件中，在运行时得到解析和使用。在应用程序运行起来的时候，类的信息会有加载和初始化过程。
+12+ (void)load;+ (void)initialize;
+都是以“+”开头的类方">
+<meta property="og:image" content="http://img.blog.csdn.net/20160103125931762">
+<meta property="og:image" content="http://img.blog.csdn.net/20160103131211442">
+<meta property="og:image" content="http://img.blog.csdn.net/20160103132923243">
+<meta property="og:updated_time" content="2016-04-12T02:44:31.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="李大大大帅">
-<meta name="twitter:description">
+<meta name="twitter:title" content="load和initialize方法详解">
+<meta name="twitter:description" content="本篇文章来详细讲解下NSObject.h中的+(void)load 和 + (void)initialize两个方法。
+Objective-C作为一门面向对象语言，有类和对象的概念。编译后，类相关的数据结构会保留在目标文件中，在运行时得到解析和使用。在应用程序运行起来的时候，类的信息会有加载和初始化过程。
+12+ (void)load;+ (void)initialize;
+都是以“+”开头的类方">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160103125931762">
   
     <link rel="alternative" href="/atom.xml" title="李大大大帅" type="application/atom+xml">
   
@@ -186,107 +200,7 @@
 	</div>
 </nav>
 
-      <div class="body-wrap">
-  
-    <article id="post-文章标题" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/10/12/文章标题/" class="article-date">
-  	<time datetime="2015-10-12T02:36:21.000Z" itemprop="datePublished">2015-10-12</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/10/12/文章标题/">文章标题</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>由于StoryBoard故事板对Tabbar的tinColor更改无效，因此自定义一个可视化类，方便StoryBoard对Tabbar的开发，提高StoryBoard的开发效率。<br>先看下效果：</p>
-<p><img src="http://img.blog.csdn.net/20160224094356252" alt="storyboard面板"></p>
-<p><img src="http://img.blog.csdn.net/20160224094512037" alt="运行结果"></p>
-<p><img src="http://img.blog.csdn.net/20160224094538835" alt="storyboard所拖拽的Tabbar所属自定义类"></p>
-<p><strong>自定义一个可视化类</strong></p>
-<p><em>LLuTabBarTintColor.h</em></p>
-<pre><code>#import &lt;UIKit/UIKit.h&gt;
-
-IB_DESIGNABLE  // 动态刷新
-
-@interface LLuTabBarTintColor : UITabBar
-
-// 注意: 加上IBInspectable就可以可视化显示相关的属性哦
-
-/** 可视化tabBar点击时颜色 */
-@property (nonatomic, strong)IBInspectable UIColor *TabBartintColor;
-
-@end`
-</code></pre><p><em>LLuTabBarTintColor.m</em></p>
-<pre><code>#import &quot;LLuTabBarTintColor.h&quot;
-
-@implementation LLuTabBarTintColor
-
-/**
- *  设置tabBar的tintColor
- *
- *  @param TabBartintColor 可视化视图传入的值
- */
-- (void)setTabBartintColor:(UIColor *)TabBartintColor {
-
-    self.tintColor = TabBartintColor;
-}
-
-@end
-</code></pre><p><strong>使用方法</strong></p>
-<p>IB_DESIGNABLE</p>
-<pre><code>使用方法：在swift里，@IBDesignable关键字写在class前即可。 
-在OC里，是IB_DESIGNABLE这个关键字，写在@implementation前即可 
-IBInspectable 
-主要作用：使view内的变量可视化，并且可以修改后马上看到
-</code></pre><p>IBInspectable</p>
-<pre><code>使用方法：在swift里，@IBInspectable关键字写在需要显示的变量前即可 
-在OC里，是IBInspectable这个关键字，写在需要显示的变量前即可 
-另外附两个快捷键： 
-command+shift+O，快速打开需要的文件 
-control+shift+鼠标左击sb，可以选择需要的sb活着view
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-load和initialize方法详解" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-load和initialize方法详解" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
       <a href="/2015/08/26/load和initialize方法详解/" class="article-date">
@@ -302,12 +216,19 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/26/load和initialize方法详解/">load和initialize方法详解</a>
+    <h1 class="article-title" itemprop="name">
+      load和initialize方法详解
     </h1>
   
 
       </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
       
     
     <div class="article-entry" itemprop="articleBody">
@@ -374,29 +295,72 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
       
     </div>
     
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/10/12/文章标题/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          文章标题
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
   
 </article>
 
 
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+    <a class="jiathis_button_twitter"></a>
+    <a class="jiathis_button_plus"></a> 
+    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
 
 
 
 
 
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="load和initialize方法详解" data-title="load和initialize方法详解" data-url="http://www.lidalu1125.cn/2015/08/26/load和initialize方法详解/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
 
-  
-  
+
+
+
 </div>
       <footer id="footer">
   <div class="outer">
@@ -420,8 +384,8 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
 		fancybox: true,
 		mathjax: true,
 		animate: true,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
