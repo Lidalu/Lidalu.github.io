@@ -21,7 +21,7 @@ Objective-C作为一门面向对象语言，有类和对象的概念。编译后
 <meta property="og:image" content="http://img.blog.csdn.net/20160103125931762">
 <meta property="og:image" content="http://img.blog.csdn.net/20160103131211442">
 <meta property="og:image" content="http://img.blog.csdn.net/20160103132923243">
-<meta property="og:updated_time" content="2016-04-12T02:44:31.000Z">
+<meta property="og:updated_time" content="2016-04-12T03:07:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="load和initialize方法详解">
 <meta name="twitter:description" content="本篇文章来详细讲解下NSObject.h中的+(void)load 和 + (void)initialize两个方法。
@@ -237,7 +237,7 @@ Objective-C作为一门面向对象语言，有类和对象的概念。编译后
 <p>Objective-C作为一门面向对象语言，有类和对象的概念。编译后，类相关的数据结构会保留在目标文件中，在运行时得到解析和使用。在应用程序运行起来的时候，类的信息会有加载和初始化过程。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+ (void)load;</span><br><span class="line">+ (void)initialize;</span><br></pre></td></tr></table></figure>
 <p>都是以“+”开头的类方法，返回为空。通常情况下，我们在开发过程中可能不必关注这两个方法。如果有需要定制，我们可以在自定义的NSObject子类中给出这两个方法的实现，这样在类的加载和初始化过程中，自定义的方法可以得到调用。</p>
-<p><strong>下面整理下细节:</strong></p>
+<p><strong>下面整理下细节:</strong><br><a id="more"></a></p>
 <p><strong>1、load和initialize的共同特点</strong></p>
 <p>load和initialize有很多共同特点，下面简单列一下：</p>
 <ol>

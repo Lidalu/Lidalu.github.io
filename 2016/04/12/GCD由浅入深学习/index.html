@@ -18,7 +18,7 @@ Tips高手可绕边走！！！
 引言虽然GCD使用很广，而且在面试时也经常问与GCD相关的问题，但是我相信深入理解关于GCD知识的人肯定不多，大部分都是人云亦云，只是使用过GCD完成一些很简单的功能。当然，使用GCD完成一些简单的功能，通常已经能够满足我们的需求了。不过，笔者比较喜欢刨根问底，因此在这里记录下学习的过程。
 Tips高手可绕边走！！！
 简介iOS实现提供实现">
-<meta property="og:updated_time" content="2016-04-12T02:55:50.000Z">
+<meta property="og:updated_time" content="2016-04-12T03:10:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GCD由浅入深学习">
 <meta name="twitter:description" content="本文转自[标哥的技术博客]，欢迎转载，转载时请注明出处！
@@ -235,6 +235,7 @@ Tips高手可绕边走！！！
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>iOS实现提供实现多线程的方案有：NSThread、NSOperation、GCD。</p>
 <p>在iOS所有实现多线程的方案中，GCD应该是最有魅力的，而且使用起来也是最方便的，因为GCD是苹果公司为多核的并行运算提出的解决方案。</p>
 <p>GCD是Grand Central Dispatch的简称，它是基于C语言的。使用GCD，我们不需要编写线程代码，其生命周期也不需要我们手动管理，定义想要执行的任务,然后添加到适当的调度队列，也就是dispatch queue。GCD会负责创建线程和调度任务，系统直接提供线程管理。</p>
+<a id="more"></a>
 <p>由于GCD是基于C语言的，因此使用起来对于没有学习过C语言的同学们，相对困难一些。不过，事实上使用是很简单，只要注意死锁等问题就好了。</p>
 <h2 id="概念：队列（Queue）"><a href="#概念：队列（Queue）" class="headerlink" title="概念：队列（Queue）"></a>概念：队列（Queue）</h2><p>我们需要了解队列的概念，GCD提供了dispatch queues来处理代码块，这些队列管理所提供给GCD的任务并用FIFO顺序执行这些任务。这样才能保证第一个被添加到队列里的任务会是队列中第一个开始的任务，而第二个被添加的任务将第二个开始，如此直到队列的终点。</p>
 <h2 id="概念：调度队列-dispath-queue"><a href="#概念：调度队列-dispath-queue" class="headerlink" title="概念：调度队列(dispath queue)"></a>概念：调度队列(dispath queue)</h2><p>所有的调度队列（dispatch queues）自身都是线程安全的，我们能从多个线程并行的访问它们。 GCD的优点是显而易见的。我们需要了解调度队列如何我们的代码的不同部分提供线程安全，以决定使用何种队列，在哪个线程上执行等。</p>

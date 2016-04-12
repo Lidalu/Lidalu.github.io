@@ -19,7 +19,7 @@ Important: In order to">
 <meta property="og:image" content="http://img.blog.csdn.net/20160104153446768">
 <meta property="og:image" content="http://img.blog.csdn.net/20160104155623586">
 <meta property="og:image" content="http://img.blog.csdn.net/20160104160540746">
-<meta property="og:updated_time" content="2016-04-12T02:47:16.000Z">
+<meta property="og:updated_time" content="2016-04-12T03:08:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="键值观察KVO详解">
 <meta name="twitter:description" content="Introduction to Key-Value Observing Programming Guide
@@ -236,8 +236,7 @@ Important: In order to">
 <p> <strong>一、KVO简介</strong></p>
 <p>KVO 全称 Key-Value Observing。中文叫键值观察。KVO其实是一种观察者模式，观察者在键值改变时会得到通知,利用它可以很容易实现视图组件和数据模型的分离，当数据模型的属性值改变之后作为监听器的视图组件就会被激发，激发时就会回调监听器自身。相比Notification，KVO更加的简单直接。</p>
 <p>KVO的操作方法由NSKeyValueCoding提供，而他是NSObject的类别，也就是说ObjC中几乎所有的对象都支持KVO操作。</p>
-<p><strong>二、运用键值观察</strong><br>KVO的使用就是简单的三步曲:</p>
-<p> <strong>1、注册需要观察的对象的属性</strong><br> 如果我们已经有了包含可供键值观察属性的类，那么就可以通过在该类的对象(被观察者)上调用名为NSKeyValueObserverRegistration 的category方法将观察者对象与被观察者对象注册</p>
+<p><strong>二、运用键值观察</strong><br>KVO的使用就是简单的三步曲:<br><a id="more"></a><br> <strong>1、注册需要观察的对象的属性</strong><br> 如果我们已经有了包含可供键值观察属性的类，那么就可以通过在该类的对象(被观察者)上调用名为NSKeyValueObserverRegistration 的category方法将观察者对象与被观察者对象注册</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(void *)context;</span><br></pre></td></tr></table></figure>
 <p> <strong>2、 处理变更通知</strong><br> 观察者需要实现名为 NSKeyValueObserving 的 category 方法来处理收到的变更通知：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;</span><br></pre></td></tr></table></figure>

@@ -20,7 +20,7 @@ XX_Prefix.pch:扩展名.pch表示“precompiled header”
 这是一个你工程里要用到的来自于外部框架的头文件列表。Xcode将编译这些头文件，这将减少你在选择Build和Build and Go时编译项目的时间。通常用到的头文件已经自动包含了pch，系统编译每一个.m文">
 <meta property="og:image" content="http://img.blog.csdn.net/20160115132659080">
 <meta property="og:image" content="http://img.blog.csdn.net/20160115132715276">
-<meta property="og:updated_time" content="2016-04-12T02:50:02.000Z">
+<meta property="og:updated_time" content="2016-04-12T03:08:17.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS开发技巧第一弹:PCH文件配置">
 <meta name="twitter:description" content="任何开发过程中，都可能会有所有文件都需要导入的包或者头文件，为了提高开发效率，我们可以配置PCH文件
@@ -239,6 +239,7 @@ XX_Prefix.pch:扩展名.pch表示“precompiled header”
 <li>还有就是可以在这个pch文件中放入宏，在整个工程中都可以用</li>
 <li>例如在一个项目中有一个hello.h文件，需要在所有.m文件中都要包含这个文件就可以在XX_Prefix.pch文件中引入hello.h</li>
 </ul>
+<a id="more"></a>
 <p><strong>具体配置过程:</strong><br>在项目里的Build Setting中选择combine，并在输入框中输入prefix，下面进行pch文件路径配置<br><img src="http://img.blog.csdn.net/20160115132659080" alt="这里写图片描述"><br><img src="http://img.blog.csdn.net/20160115132715276" alt="这里写图片描述"></p>
 <p><strong><em>注意: $(SRCROOT)/后面是项目的相对路径。</em></strong></p>
 <p>最后，编译下工程，Build Success，发现公共的头文件或者宏定义只需要在pch文件中导入了就好使。</p>

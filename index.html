@@ -214,90 +214,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本文转自<a href="http://www.henishuo.com/gcd-multiple-thread-learn/" target="_blank" rel="external">[标哥的技术博客]</a>，欢迎转载，转载时请注明出处！</p>
+        <p>本文转自<a href="http://www.henishuo.com/gcd-multiple-thread-learn/">[标哥的技术博客]</a>，欢迎转载，转载时请注明出处！</p>
 <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>虽然GCD使用很广，而且在面试时也经常问与GCD相关的问题，但是我相信深入理解关于GCD知识的人肯定不多，大部分都是人云亦云，只是使用过GCD完成一些很简单的功能。当然，使用GCD完成一些简单的功能，通常已经能够满足我们的需求了。不过，笔者比较喜欢刨根问底，因此在这里记录下学习的过程。</p>
 <h2 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h2><p>高手可绕边走！！！</p>
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>iOS实现提供实现多线程的方案有：NSThread、NSOperation、GCD。</p>
 <p>在iOS所有实现多线程的方案中，GCD应该是最有魅力的，而且使用起来也是最方便的，因为GCD是苹果公司为多核的并行运算提出的解决方案。</p>
 <p>GCD是Grand Central Dispatch的简称，它是基于C语言的。使用GCD，我们不需要编写线程代码，其生命周期也不需要我们手动管理，定义想要执行的任务,然后添加到适当的调度队列，也就是dispatch queue。GCD会负责创建线程和调度任务，系统直接提供线程管理。</p>
-<p>由于GCD是基于C语言的，因此使用起来对于没有学习过C语言的同学们，相对困难一些。不过，事实上使用是很简单，只要注意死锁等问题就好了。</p>
-<h2 id="概念：队列（Queue）"><a href="#概念：队列（Queue）" class="headerlink" title="概念：队列（Queue）"></a>概念：队列（Queue）</h2><p>我们需要了解队列的概念，GCD提供了dispatch queues来处理代码块，这些队列管理所提供给GCD的任务并用FIFO顺序执行这些任务。这样才能保证第一个被添加到队列里的任务会是队列中第一个开始的任务，而第二个被添加的任务将第二个开始，如此直到队列的终点。</p>
-<h2 id="概念：调度队列-dispath-queue"><a href="#概念：调度队列-dispath-queue" class="headerlink" title="概念：调度队列(dispath queue)"></a>概念：调度队列(dispath queue)</h2><p>所有的调度队列（dispatch queues）自身都是线程安全的，我们能从多个线程并行的访问它们。 GCD的优点是显而易见的。我们需要了解调度队列如何我们的代码的不同部分提供线程安全，以决定使用何种队列，在哪个线程上执行等。</p>
-<p>GCD将长期运行的任务拆分成多个工作单元，并将这些单元添加到dispath queue中，系统会管理这些dispath queue，为我们在多个线程上执行工作单元，我们不需要手动启动和管理后台线程。</p>
-<p>系统提供了许多预定义的dispath queue，包括始终在主线程上执行工作的dispath queue。我们可以创建自己的dispath queue，而且可以创建任意多个。GCD的dispath queue严格遵循FIFO(先进先出)原则，添加到dispath queue的工作任务将按照加入dispath queue的顺序启动。</p>
-<h2 id="概念：串行（Serial）"><a href="#概念：串行（Serial）" class="headerlink" title="概念：串行（Serial）"></a>概念：串行（Serial）</h2><p>我们在学习操作系统这门课程的时候，经常会提到串行。我们使用GCD，也会用到串行的概念。</p>
-<p>所谓串行（Serial）执行，指同一时间每次只能执行一个任务。</p>
-<h2 id="概念：并发（Concurrent）"><a href="#概念：并发（Concurrent）" class="headerlink" title="概念：并发（Concurrent）"></a>概念：并发（Concurrent）</h2><p>说到串行，自然会想到并发。在操作系统这门课程中，这个概念是非常重要的。</p>
-<p>所谓并发（Concurrent），指同一时间可以同时执行多个任务。</p>
-<h2 id="概念：死锁（Deadlock）"><a href="#概念：死锁（Deadlock）" class="headerlink" title="概念：死锁（Deadlock）"></a>概念：死锁（Deadlock）</h2><p>操作系统这门课程中对死锁的介绍说明有很多。在实际开发中，也经常遇到死锁的问题。</p>
-<p>所谓死锁（Deadlock）是指它们都卡住了，并等待对方完成或执行其它操作。第一个不能完成是因为它在等待第二个的完成。但第二个也不能完成，因为它在等待第一个的完成。</p>
-<h2 id="概念：线程安全（Thread-Safe）"><a href="#概念：线程安全（Thread-Safe）" class="headerlink" title="概念：线程安全（Thread Safe）"></a>概念：线程安全（Thread Safe）</h2><p>还记得我们在写单例的时候都加了哪些代码吗？我们应该知道，既然要声明为单例，说明这是共享资源区，就会存在竞态条件，因此，我们必须保证只创建一次。</p>
-<p>像这样添加了线程锁的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@synchronized(&lt;#token#&gt;) &#123;</span><br><span class="line">  &lt;#statements#&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>还有这样用于创建单例的，以确保只执行一次：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">static dispatch_once_t onceToken;</span><br><span class="line">dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">  &lt;#code to be executed once#&gt;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="创建和管理dispatch-queue"><a href="#创建和管理dispatch-queue" class="headerlink" title="创建和管理dispatch queue"></a>创建和管理dispatch queue</h2><p><strong>1.获取全局并发调度队列</strong></p>
-<p>并发的调度队列可以同时并行地执行多个任务，但是并发队列也是队列，因此同样遵循着FIFO的原则来启动任务。因为并发执行任务与系统有关，其同时执行任务的数量是由系统根据应用和系统动态变化决定的。</p>
-<p>现在iOS系统，为每个应用提供了四种并发的全局共享的调度队列，其区别在于优先级不一样。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * The global concurrent queues may still be identified by their priority,</span><br><span class="line"> * which map to the following QOS classes:</span><br><span class="line"> * </span><br><span class="line"> *  - DISPATCH_QUEUE_PRIORITY_HIGH:         QOS_CLASS_USER_INITIATED</span><br><span class="line"> *  - DISPATCH_QUEUE_PRIORITY_DEFAULT:      QOS_CLASS_DEFAULT</span><br><span class="line"> *  - DISPATCH_QUEUE_PRIORITY_LOW:          QOS_CLASS_UTILITY</span><br><span class="line"> *  - DISPATCH_QUEUE_PRIORITY_BACKGROUND:   QOS_CLASS_BACKGROUND</span><br><span class="line"> */</span><br></pre></td></tr></table></figure>
-<p>我们不需要创建它，只需要直接获取就可以了，因为这是系统为我们提供的，而且这个还是全局共享的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);</span><br></pre></td></tr></table></figure>
-<p>第一个参数为优先级，就是上面提供的这四种。第二个参数没有使用到，这个参数是预留的，使用0即可，看官方说明：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* @param flags</span><br><span class="line">* Reserved for future use. Passing any value other than zero may result in</span><br><span class="line">* a NULL return value.</span><br></pre></td></tr></table></figure>
-<p>flags就是第二个参数，也就是为未来预留的参数。看看苹果想得真够远的，为未来预留~~。</p>
-<p><strong><em>注意：虽然dispatch queue是引用计数的对象,但我们不需要retain和release这个全局的并发queue。因为这些queue对应用是全局的,retain和release调用会被忽略。</em></strong></p>
-<h2 id="2-创建串行调度队列"><a href="#2-创建串行调度队列" class="headerlink" title="2.创建串行调度队列"></a>2.创建串行调度队列</h2><p>当任务需要按特定的顺序执行时,就需要使用串行调度队列（Dispatch Queue）,串行调度队列每次只能执行一个任务。</p>
-<p>我们可以使用串行队列替代锁,保护共享资源等。和锁不一样的是,串行队列确保任务按指定的顺序执行，而且只要你异步地提交任务到串行队列,就永远不会产生死锁。</p>
-<p>我们可以手动创建和管理串行队列，且可以创建很多个，但是我们不要创建很多个串行队列来执行很多的任务，当需要执行大量的任务时，应该交给全局并发队列来完成。从操作系统方面思考，虽然允许应用创建很多个串行队列，但是其优先级永远不会比系统级的高，因此当任务很多时，所要求的资源未必就可以提供。所以，任务量大时，应该交给系统提供的全局队列来完成才是最佳的。</p>
-<p>使用下面的方法来创建串行队列，其中第一个参数是队列的名称，通常使用公司的反域名，如com.company.project。第二个参数是队列相关属性，通常都传NULL：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dispatch_queue_t sequalQueue = dispatch_queue_create(&quot;com.huangyibiao.helloworld&quot;, NULL);</span><br></pre></td></tr></table></figure>
-<h2 id="3-获取公共队列"><a href="#3-获取公共队列" class="headerlink" title="3.获取公共队列"></a>3.获取公共队列</h2><p>应用提供了几下几种获取公共队列的方法：</p>
-<ol>
-<li>dispatch_get_current_queue：在iOS 6.0之后已经废弃，用于获取当前正在执行任务的队列，主要用于调试</li>
-<li>dispatch_get_main_queue： 最常用的，用于获取应用主线程关联的串行调度队列</li>
-<li>dispatch_get_global_queue：最常用的，用于获取应用全局共享的并发队列</li>
-</ol>
-<p>对于后面这两个分别获取主线程的串行队列和获取应用全局共享的并发队列是非常常用的，当我们需要开一个线程并发地异步执行任务时，我们就会放到全局队列中。当我们在异步执行完成时，通常需要回到主线程更新UI显示。</p>
-<h2 id="4-调度队列（Dispatch-Queue）的内存管理"><a href="#4-调度队列（Dispatch-Queue）的内存管理" class="headerlink" title="4.调度队列（Dispatch Queue）的内存管理"></a>4.调度队列（Dispatch Queue）的内存管理</h2><p>调度队列，即Dispatch Queue与其它类型的dispatch对象是引用计数的数据类型。当创建一个串行dispatch queue时,初始引用计数为1,我们可用dispatch_retain和dispatch_release函数来增加和减少引用计数。当引用计数为0时,系统会异步地销毁这个queue。</p>
-<p>以上是对于普通创建的调度队列有用，但对于系统本身提供的全局并发队列和主线程串行队列则不需要我们手动内管其内存，系统会自动管理。</p>
-<p>在使用全局并发队列时，我们只通过dispatch_get_global_queue方法来获取即可，我们不需要管理其引用。 在使用主线程串行队列时，我们只通过dispatch_get_main_queue方法来获取即可，我们也不需要管理其内存问题。</p>
-<h2 id="添加任务到调度队列"><a href="#添加任务到调度队列" class="headerlink" title="添加任务到调度队列"></a>添加任务到调度队列</h2><p>要想让调度队列执行任务，那么我们就需要将任务添加到适当的调度队列中。在实际iOS开发中，我们通常配合block的使用，将任务封装到一个block中。</p>
-<p>我们可以异步或者同步添加任务到队列中，但是我们应该尽可能地使用dispatch_async或dispatch_async_f。前者是提交一个block任务到队列中，后者是提供一个函数任务到队列中。基本上都是直接使用dispatch_async提交一个block到队列中，这代码写起来更加地简洁。</p>
-<p>当然，我们也可以同步添加任务。有时候我们可能希望同步地调度任务,以避免竞争条件或其它同步错误。使用dispatch_sync或dispatch_sync_f函数同步地添加任务到Queue,这两个函数会阻塞当前调用线程,直到相应任务完成执行。在实际开发中，当需要同步执行任务时，大多是直接使用dispatch_sync这个提交block任务的方法，使用起来更简洁。</p>
-<p><strong><em>注意：当队列中有任务正在同步执行时，我们不能使用dispatch_sync或dispatch_sync_f同步调度新任务到当前正在执行的queue中。对于串行queue肯定会导致死锁，而对于并发queue也应该避免这么使用。原来我接手的项目中，有一个同步任务正在执行数据库操作，可是当我也需要操作数据时，调用其所提供的api，使用dispatch_sync将我的任务添加到队列中，结果导致了死锁，每次都crash。</em></strong></p>
-<p>为什么尽可能地添加异步执行的任务呢？因此同步任务会阻塞主线程，很可能导致事件响应不了。</p>
-<p>我们看看如何简单地创建队列、异步、同步任务添加到队列：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">dispatch_queue_t queue = dispatch_queue_create(&quot;com.huangyibiao.helloworld&quot;, NULL);</span><br><span class="line"> </span><br><span class="line">dispatch_async(queue, ^&#123;  </span><br><span class="line">    NSLog(@&quot;开启了一个异步任务，当前线程：%@&quot;, [NSThread currentThread]);  </span><br><span class="line">&#125;);  </span><br><span class="line">  </span><br><span class="line">dispatch_sync(queue, ^&#123;  </span><br><span class="line">    NSLog(@&quot;开启了一个同步任务，当前线程：%@&quot;, [NSThread currentThread]);  </span><br><span class="line">&#125;);  </span><br><span class="line"> </span><br><span class="line">// MRC下才能调用，对于ARC就不能添加这行代码了。</span><br><span class="line">dispatch_release(queue);</span><br></pre></td></tr></table></figure>
-<p>由于这个串行调度队列是我们自己创建的，我们需要管理其内存。不过在实际开发中，使用自己创建创建的方式是比较少见的，通常都是直接使用系统为每个应用提供的全局共享并发队列异步执行任务，然后使用主线程串行队列更新界面。</p>
-<h2 id="控制并发数"><a href="#控制并发数" class="headerlink" title="控制并发数"></a>控制并发数</h2><p>太多并发是会带来很多的风险的。在实际开发中，并不是并发数越多就越好，往往是需要控制其并发数量的。比如，在处理网络请求并发数时，通常会设置限制最大并发数为4左右。当并发数量大了，开销也会很大。学过操作系统应该清楚，并发量大了，临界资源访问操作就很难控制，控制不好就会导致死锁等。当我们需要执行循环异步处理任务时，可以考虑使用dispatch_apply来替代。请看下一节！</p>
-<h2 id="并发地循环迭代任务"><a href="#并发地循环迭代任务" class="headerlink" title="并发地循环迭代任务"></a>并发地循环迭代任务</h2><p>如果迭代执行的任务与其它迭代任务是独立无关的,而且循环迭代执行顺序也无关紧要的话,我们可以调用dispatch_apply或dispatch_apply_f函数来替换循环。前者是提交block任务，后者是提交函数任务到队列中。比如，我们需要上传多张图片，这些图片的上传是互不干扰的，迭代执行的顺序是不重要的，那么我们就可以使用dispatch_apply来替换掉for循环。</p>
-<p>下面代码使用dispatch_apply替换了for循环,所传递的block必须包含一个size_t类型的参数,用来标识当前循环迭代。第一次迭代这个参数值为0,最后一次值为count - 1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 获得全局并发queue</span><br><span class="line">dispatch_queue_t gqueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);</span><br><span class="line">size_t gcount = 10;</span><br><span class="line">dispatch_apply(gcount, gqueue, ^(size_t i) &#123;</span><br><span class="line">    [self uploadImageWithIndex:(NSUInteger)(i)];</span><br><span class="line">&#125;);</span><br><span class="line"> </span><br><span class="line">- (void)uploadImageWithIndex:(NSUInteger)imageIndex &#123;</span><br><span class="line">  NSLog(@&quot;上传索引为%lu的图片&quot;, imageIndex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>打印结果说明顺序是不确定的，可看得出来这是并发执行的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">2015-11-24 00:06:11.692 TestGCD[27714:2678984] 上传索引为0的图片</span><br><span class="line">2015-11-24 00:06:11.692 TestGCD[27714:2679067] 上传索引为3的图片</span><br><span class="line">2015-11-24 00:06:11.692 TestGCD[27714:2678984] 上传索引为4的图片</span><br><span class="line">2015-11-24 00:06:11.692 TestGCD[27714:2679064] 上传索引为2的图片</span><br><span class="line">2015-11-24 00:06:11.692 TestGCD[27714:2678984] 上传索引为6的图片</span><br><span class="line">2015-11-24 00:06:11.692 TestGCD[27714:2679065] 上传索引为1的图片</span><br><span class="line">2015-11-24 00:06:11.693 TestGCD[27714:2678984] 上传索引为8的图片</span><br><span class="line">2015-11-24 00:06:11.692 TestGCD[27714:2679067] 上传索引为5的图片</span><br><span class="line">2015-11-24 00:06:11.693 TestGCD[27714:2679064] 上传索引为7的图片</span><br><span class="line">2015-11-24 00:06:11.693 TestGCD[27714:2679065] 上传索引为9的图片</span><br></pre></td></tr></table></figure>
-<p><strong><em>注意：dispatch_apply或dispatch_apply_f函数也是在所有迭代完成之后才会返回，因此这两个函数会阻塞当前线程。当我们在主线程中使用时，一定要小心，很容易造成事件无法响应，所以如果循环代码需要一定的时间执行,可考虑在另一个线程中调用这两个函数。如果所传递的参数是串行queue，而且正是执行当前代码的queue,就会产生死锁。</em></strong></p>
-<h2 id="主线程中执行任务"><a href="#主线程中执行任务" class="headerlink" title="主线程中执行任务"></a>主线程中执行任务</h2><p>看看下面很常用的异步下载图片的代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 异步下载图片  </span><br><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;  </span><br><span class="line">    NSURL *url = [NSURL URLWithString:@&quot;图片的URL&quot;];  </span><br><span class="line">    UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];  </span><br><span class="line">      </span><br><span class="line">    // 回到主线程显示图片  </span><br><span class="line">    dispatch_async(dispatch_get_main_queue(), ^&#123;  </span><br><span class="line">        self.imageView.image = image;  </span><br><span class="line">    &#125;);  </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>这里先将异步下载图片的任务放到dispatch_get_global_queue全局共享并发队列中执行，在完成以后，需要放在dispatch_get_main_queue回到主线程更新UI。</p>
-<h2 id="暂停和继续queue"><a href="#暂停和继续queue" class="headerlink" title="暂停和继续queue"></a>暂停和继续queue</h2><p>我们可以使用·dispatch_suspend·函数暂停一个queue以阻止它执行block对象;使用dispatch_resume函数继续dispatch queue。调用dispatch_suspend会增加queue的引用计数,调用dispatch_resume则减少queue的引用计数。当引用计数大于0时,queue就保持挂起状态。因此你必须对应地调用dispatch_suspend和dispatch_resume函数。挂起和继续是异步的,而且只在执行block之间生效，挂起一个queue不会导致正在执行的block停止。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">dispatch_suspend(gqueue);</span><br><span class="line">dispatch_resume(gqueue);</span><br></pre></td></tr></table></figure>
-<p>注意：dispatch_suspend和dispatch_resume是成对出现的。</p>
-<h2 id="调度组（Dispatch-Group）的使用"><a href="#调度组（Dispatch-Group）的使用" class="headerlink" title="调度组（Dispatch Group）的使用"></a>调度组（Dispatch Group）的使用</h2><p>当我们需要下载多张图片并且图片要求这几张图片都下载完成以后才能更新UI，那么这种情况下，我们就需要使用dispatch_group_t来完成了。</p>
-<p>像这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 异步下载图片  </span><br><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;  </span><br><span class="line">    // 下载第一张图片  </span><br><span class="line">    UIImage *image1 = [self imageWithURLString:url1];  </span><br><span class="line">      </span><br><span class="line">    // 下载第二张图片  </span><br><span class="line">    UIImage *image2 = [self imageWithURLString:url2];  </span><br><span class="line">      </span><br><span class="line">    // 回到主线程显示图片  </span><br><span class="line">    dispatch_async(dispatch_get_main_queue(), ^&#123;  </span><br><span class="line">        self.imageView1.image = image1;  </span><br><span class="line">        self.imageView2.image = image2;  </span><br><span class="line">    &#125;);  </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>这段代码是不能做到的，但是，我们还是有办法做到的。dispatch_group_t就是很好的选择。对于调度组，所添加的任务可以是同步的，也可以是异步的，在最近任务全部完成后都会有回调。</p>
-<p>首先，我们通过dispatch_group_create创建一个组，然后通过dispatch_group_async将任务分别添加到该组中。当组中的所有任务都完成以后，我们可以通过dispatch_group_notify得到回调，然后在主线程更新UI。</p>
-<p>代码写法像下面这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);</span><br><span class="line"> </span><br><span class="line">// 异步下载图片</span><br><span class="line">dispatch_async(queue, ^&#123;</span><br><span class="line">  // 创建一个组</span><br><span class="line">  dispatch_group_t group = dispatch_group_create();</span><br><span class="line">  </span><br><span class="line">  __block UIImage *image1 = nil;</span><br><span class="line">  __block UIImage *image2 = nil;</span><br><span class="line">  </span><br><span class="line">  // 分别将任务添加到组中</span><br><span class="line">  dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">    image1 = [self downloadImage:url1];</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">    image2 = [self downloadImage:url2];</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  // 等待组中的任务执行完毕,回到主线程执行block回调</span><br><span class="line">  dispatch_group_notify(group, dispatch_get_main_queue(), ^&#123;</span><br><span class="line">    self.imageView1.image = image1;</span><br><span class="line">    self.imageView2.image = image2;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="延迟执行"><a href="#延迟执行" class="headerlink" title="延迟执行"></a>延迟执行</h2><p>我们常见的延迟执行方法有：</p>
-<p>方法一：使用NSObject的api，同步执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[self performSelector:@selector(myFunction) withObject:nil afterDelay:5.0];</span><br></pre></td></tr></table></figure>
-<p>方法二：使用NSTimer定时器，不过这种方法没必要。</p>
-<p>方法三：使用dispatch_after方法异步延迟执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CGFloat time = 5.0f;</span><br><span class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)),</span><br><span class="line">             dispatch_get_main_queue(), ^&#123;</span><br><span class="line">    // time秒后异步执行这里的代码...</span><br><span class="line">    </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>对于在实际开发中常用的差不多全了，其它比较偏的API就不说了，在开发中比较少用。</p>
-<p>本文转自<a href="http://www.henishuo.com/gcd-multiple-thread-learn/" target="_blank" rel="external">[标哥的技术博客]</a>，欢迎转载，转载时请注明出处！</p>
-
       
     </div>
     
@@ -306,6 +228,10 @@
       
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2016/04/12/GCD由浅入深学习/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -355,95 +281,6 @@
 <p><strong>objc使用什么机制管理对象内存？</strong></p>
 <p>1、MRC 手动引用计数<br>2、ARC 自动引用计数,现在通常使用自动引用计数</p>
 <p><strong>import 跟#include 又什么区别，@class呢, ＃import&lt;&gt; 跟 #import””又什么区别？</strong></p>
-<p>import是Objective-C导入头文件的关键字，#include是C/C++导入头文件的关键字,使用#import头文件会自动只导入一次，不会重复导入，相当于#include和#pragma once；@class告诉编译器某个类的声明，当执行时，才去查看类的实现文件，可以解决头文件的相互包含；#import&lt;&gt;用来包含系统的头文件，#import””用来包含用户头文件。</p>
-<p><strong>描述一下iOS SDK中如何实现MVC的开发模式</strong></p>
-<p>MVC是模型、试图、控制开发模式，对于iOS SDK，所有的View都是视图层的，它应该独立于模型层，由视图控制层来控制。所有的用户数据都是模型层，它应该独立于视图。所有的ViewController都是控制层，由它负责控制视图，访问模型数据。</p>
-<p><strong>浅复制和深复制的区别？</strong></p>
-<p>1、浅层复制：只复制指向对象的指针，而不复制引用对象本身。<br>2、深层复制：复制引用对象本身。</p>
-<p>意思就是说我有个A对象，复制一份后得到A_copy对象后，对于浅复制来说，A和A_copy指向的是同一个内存资源，复制的只不过是是一个指针，对象本身资源<br>还是只有一份，那如果我们对A_copy执行了修改操作,那么发现A引用的对象同样被修改，这其实违背了我们复制拷贝的一个思想。深复制就好理解了,内存中存在了<br>两份独立对象本身。</p>
-<p><strong>category是什么? 扩展一个类的方式用继承好还是类目好? 为什么?</strong></p>
-<p>category是类目.用类目好,因为继承要满足A is a B的关系,而类目只需要满足A has a B的关系,局限性更小,你不用定义子类就能扩展一个类的功能,还能将类的定义分开放在不同的源文件里,用category去重写类的方法,仅对本category有效,不会影响到其他类与原有类的关系。</p>
-<p><strong>延展是什么? 作用是什么?</strong></p>
-<p>延展(extension):在自己类的实现文件中添加类目来声明私有方法。</p>
-<p><strong>解释一下懒汉模式?</strong></p>
-<p>懒汉模式，只在用到的时候才去初始化。<br>也可以理解成延时加载。<br>我觉得最好也最简单的一个列子就是tableView中图片的加载显示了。<br>一个延时载，避免内存过高，一个异步加载，避免线程堵塞。</p>
-<p><strong>进阶篇</strong></p>
-<p><strong>@property中有哪些属性关键字？</strong></p>
-<p>属性可以拥有的特质分为四类:</p>
-<p>1、原子性—- nonatomic 特质</p>
-<p>在默认情况下，由编译器合成的方法会通过锁定机制确保其原子性(atomicity)。如果属性具备 nonatomic 特质，则不使用同步锁。请注意，尽管没有名为“atomic”的特质(如果某属性不具备 nonatomic 特质，那它就是“原子的” ( atomic) )，但是仍然可以在属性特质中写明这一点，编译器不会报错。若是自己定义存取方法，那么就应该遵从与属性特质相符的原子性。</p>
-<p>1.读/写权限—-readwrite(读写)、readonly (只读)</p>
-<p>2.内存管理语义—-assign、strong、 weak、copy<br>方法名—-getter= 、setter=</p>
-<p><strong>你经常使用一些第三方库有哪些?</strong></p>
-<p>1、AFNetworking<br>2、SDWebImage<br>3、FMDB<br>4、JSONKit<br>5、MJRefresh<br>6、MJExtension<br>7、Masonry<br>8、友盟，shareSDK等三方库。</p>
-<p><strong>你经常用的设计模式有哪些？</strong></p>
-<p>1、MVC<br>2、代理模式<br>3、观察者模式<br>4、单例模式<br>5、工厂模式</p>
-<p><strong>本地存储有哪些方式？</strong></p>
-<p>1、属性列表（NSUserDefault 或 plist）<br>2、对象归档 （NSKeyedArchiver）<br>3、SQLite<br>4、CoreData</p>
-<p><strong>weak属性需要在dealloc中置nil么？</strong></p>
-<p>不需要,在ARC环境无论是强指针还是弱指针都无需在deallco设置为nil,ARC会自动帮我们处理。</p>
-<p><strong>@synthesize和@dynamic分别有什么作用？</strong></p>
-<p>1、@property有两个对应的词，一个是@synthesize，一个是@dynamic。如果@synthesize和@dynamic都没写，那么默认的就是@syntheszie var = _var;<br>2、@synthesize的语义是如果你没有手动实现setter方法和getter方法，那么编译器会自动为你加上这两个方法。<br>3、@dynamic告诉编译器,属性的setter与getter方法由用户自己实现，不自动生成。</p>
-<p><strong>用@property声明的NSString（或NSArray，NSDictionary）经常使用copy关键字，为什么？如果改用strong关键字，可能造成什么问题？</strong></p>
-<p>1、因为父类指针可以指向子类对象,使用copy的目的是为了让本对象的属性不受外界影响,使用copy无论给我传入是一个可变对象还是不可对象,我本身持有的就是一个不可变的副本.<br>2、如果我们使用是strong,那么这个属性就有可能指向一个可变对象,如果这个可变对象在外部被修改了,那么会影响该属性.</p>
-<p><strong>什么时候会报unrecognized selector的异常？</strong></p>
-<p>当该对象上某个方法,而该对象上没有实现这个方法的时候</p>
-<p><strong>使用block时什么情况会发生引用循环，如何解决？</strong></p>
-<p>1、只要是一个对象对该block进行了强引用,在block内部有直接使用到该对象。<br>2、解决方案：__weak id weakSelf = self;</p>
-<p><strong>使用系统的某些block api（如UIView的block版本写动画时），是否也考虑引用循环问题？</strong></p>
-<p>一般不用考虑,因为官方文档中没有告诉我们要注意发生强引用,所以推测系统控件一般没有对这些block进行强引用,所以我们可以不用考虑循环强引用的问题</p>
-<p><strong>GCD的队列（dispatch_queue_t）分哪两种类型？</strong></p>
-<p>串行队列和并行队列</p>
-<p><strong>如何用GCD同步若干个异步调用？（如根据若干个url异步加载多张图片，然后在都下载完成后合成一张整图）</strong></p>
-<p>总体上说: 使用 dispatch group，然后 wait forever 等待完成， 或者采取 group notify 来通知回调。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);</span><br><span class="line">dispatch_group_t group = dispatch_group_create();</span><br><span class="line">dispatch_group_async(group, queue, ^&#123; /*加载图片1 */ &#125;);</span><br><span class="line">dispatch_group_async(group, queue, ^&#123; /*加载图片2 */ &#125;);</span><br><span class="line">dispatch_group_async(group, queue, ^&#123; /*加载图片3 */ &#125;); </span><br><span class="line">dispatch_group_notify(group, dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        // 合并图片</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p><strong>以下代码运行结果如何？</strong></p>
-<p>只能输出1,然后线程主线程死锁</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad</span><br><span class="line">&#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    NSLog(@&quot;1&quot;);</span><br><span class="line">    dispatch_sync(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        NSLog(@&quot;2&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line">    NSLog(@&quot;3&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>若一个类有实例变量NSString *_foo，调用setValue:forKey:时，可以以foo还是_foo作为key？</strong></p>
-<p>都可以</p>
-<p><strong>IBOutlet连出来的视图属性为什么可以被设置成weak?</strong></p>
-<p>因为视图已经对它有一个强引用了</p>
-<p><strong>你单例怎么理解怎么用的?</strong></p>
-<p>Singleton Pattern单例设计模式，通过单例模式可以保证系统中一个类只有一个实例而且该实例易于外界访问，从而方便对实例个数的控制并节约系统资源。如果希望在系统中某个类的对象只能存在一个，单例模式是最好的解决方案。类只能有一个实例，而且必须从一个为人熟知的访问点对其进行访问，比如工厂方法。这个唯一的实例只能通过子类化进行扩展，而且扩展的对象不会破坏客户端代码。例如，UIApplication的sharedApplication方法，任何时候都会返回一个当前应用程序的UIApplication实例。</p>
-<p><strong>lldb（gdb）常用的调试命令？</strong></p>
-<p>最常用就是 : po 对象</p>
-<p><strong>什么是谓词？</strong></p>
-<p>谓词是通过NSPredicate，是通过给定的逻辑条件作为约束条件，完成对数据的筛选。</p>
-<p><strong>+(void)load; +(void)initialize; 的区别？</strong></p>
-<p>+(void)load; 在程序运行后立即执行。<br>+(void)initialize; 在类的方法第一次被调时执行.</p>
-<p><strong>什么是KVC，什么是KVO？</strong></p>
-<p>1、kvc:键 - 值编码是一种间接访问对象的属性使用字符串来标识属性，而不是通过调用存取方法，直接或通过实例变量访问的机制。<br>2、kvo:键值观察机制，他提供了观察某一属性变化的方法，极大的简化了代码。</p>
-<p><strong>什么时候用delegate，什么时候用Notification？</strong></p>
-<p>delegate针对one-to-one关系，并且reciever可以返回值 给sender，notification 可以针对one-to-one/many/none,reciever无法返回值给sender.所以，delegate用于sender希望接受到 reciever的某个功能反馈值，notification用于通知多个object某个事件</p>
-<p><strong>block和weak区别？</strong></p>
-<p>1、<strong>block不管是ARC还是MRC模式下都可以使用，可以修饰对象，还可以修饰基本数据类型。<br>2、</strong>weak只能在ARC模式下使用，也只能修饰对象（NSString），不能修饰基本数据类型（int）。<br>3、block对象可以在block中被重新赋值，weak不可以。</p>
-<p><strong>frame和bounds有什么不同？</strong></p>
-<p>frame指的是：该view在父view坐标系统中的位置和大小。（参照点是父亲的坐标系统）bounds指的是：该view在本身坐标系统中 的位置和大小。（参照点是本身坐标系统）</p>
-<p><strong>UIView和CALayer有什么不同？</strong></p>
-<p>两者最大的区别是,图层不会直接渲染到屏幕上，UIView是iOS系统中界面元素的基础，所有的界面元素都是继承自它。它本身完全是由CoreAnimation来实现的。它真正的绘图部分，是由一个CALayer类来管理。UIView本身更像是一个CALayer的管理器。一个UIView上可以有n个CALayer，每个layer显示一种东西，增强UIView的展现能力。</p>
-<p><strong>TCP和UDP的区别？</strong></p>
-<p>1、TCP：（传输控制协议），提供面向连接的、可靠地点对点的通信；<br>2、UDP：（用户数据报协议），提供非连接的不可靠的点对多点的通信；<br>3、实际运用中，看程序注重的是哪一方面，是可靠还是快速；</p>
-<p><strong>socket连接与http连接</strong></p>
-<p>1、http连接：短连接。即客户端向服务端发送一次请求，服务端响应之后，链接即会断掉；<br>2、socket连接：长连接。即客户端一旦与服务器建立接连，便不会主动断掉。</p>
-<p><strong>HTTP 的post与get区别与联系，实践中如何选择它们?</strong></p>
-<p>1、get是从服务器上获取数据，post是向服务器传送数据。<br>2、在客户端，Get方式在通过URL提交数据，数据在URL中可以看到；POST方式，数据放置在HTML HEADER内提交。<br>3、对于get方式，服务器端用Request.QueryString获取变量的值，对于post方式，服务器端用Request.Form获取提交的数据。<br>4、GET方式提交的数据最多只能有1024字节，而POST则没有此限制。<br>5、安全性问题。正如在（1）中提到，使用 Get 的时候，参数会显示在地址栏上，而 Post 不会。所以，如果这些数据是中文数据而且是非敏感数据，那么使用 get；如果用户输入的数据不是中文字符而且包含敏感数据，那么还是使用 post为好。<br>Http定义了与服务器交互的不同方法，最基本的方法有4种，分别是GET，POST，PUT，DELETE。URL全称是资源描述符，我们可以这样认为：一个URL地址，它用于描述一个网络上的资源，而HTTP中的GET，POST，PUT，DELETE就对应着对这个资源的查，改，增，删4个操作。GET一般用于获取/查询资源信息，而POST一般用于更新资源信息。</p>
-<p><strong>检查内存管理问题的方式有哪些</strong></p>
-<p>1、点击Xcode顶部菜单中的ProductàAnalyze。这种方法主要可以查看内存泄露，变量未初始化，变量定义后没有被使用到<br>2、使用Instrument工具检查。点击Xcode顶部菜单中的Product Profile，弹出一个界面，选择左侧的Memory后，再选右侧的Leaks。<br>3、人工检查</p>
-<p><strong>谈安卓与苹果的优缺点</strong></p>
-<p>苹果系统优点是左右流畅，软件多，界面华丽，图标统一，很美观；缺点是系统封闭，不允许用户过多的个性化设置，而且只能在苹果手机上用。安卓系统优点是开放，可以自己扩展的东西很多，支持的硬件也多，各个价位的手机都有；缺点就是软件太杂乱，兼容性有问题，图标混乱不美观。iOS的确比android流畅，这仅仅体现在较大软件切换时，其他差不多流畅，iOS并不能做到完全后台，如果它完全后台估计也不会比安卓流畅多少。反之，如果安卓只是注重单个运行，流畅度也会大大提升，iOS系统更新没有android那么频繁，爱体验的人会选安卓，那些怕烦的会选iOS。iOS的硬件需求选不及android，以至于android机会相对iOS较热，较费电额。</p>
-<p><strong>大神篇</strong></p>
-<p><strong>运行时你是怎么理解的?</strong></p>
-<p>ObjC Runtime 其实是一个 Runtime 库，基本上用 C 和汇编写的，这个库使得 C 语言有了面向对象的能力（脑中浮现当你乔帮主参观了施乐帕克的 SmallTalk 之后嘴角一抹浅笑）。这个库做的事前就是加载类的信息，进行方法的分发和转发之类的。OC是一种面向runtime(运行时)的语言，也就是说，它会尽可能地把代码执行的决策从编译和链接的时候，推迟到运行时。这给程序员写代码带来很大的灵活性，比如说你可以把消息转发给你想要的对象，或者随意交换一个方法的实现之类的。这就要求runtime能检测一个对象是否能对一个方法进行响应，然后再把这个方法分发到对应的对象去。</p>
-<p><strong>@protocol 和 category 中如何使用 @property</strong></p>
-<p>1、在 protocol 中使用 property 只会生成 setter 和 getter 方法声明,我们使用属性的目的,是希望遵守我协议的对象能实现该属性<br>2、category 使用 @property 也是只会生成 setter 和 getter 方法的声明,如果我们真的需要给 category 增加属性的实现,需要借助于运行时的两个函数：<br><strong>·</strong>    objc_setAssociatedObject<br><strong>·</strong>    objc_getAssociatedObject</p>
-<p><strong>runtime如何通过selector找到对应的IMP地址？</strong></p>
-<p>每一个类对象中都一个方法列表,方法列表中记录着方法的名称,方法实现,以及参数类型,其实selector本质就是方法名称,通过这个方法名称就可以在方法列表中找到对应的方法实现.</p>
-<p><strong>一个objc对象如何进行内存布局？</strong></p>
-<p>1、所有父类的成员变量和自己的成员变量都会存放在该对象所对应的存储空间中.<br>2、每一个对象内部都有一个isa指针,指向他的类对象,类对象中存放着本对象的</p>
-<p><strong>·</strong>    对象方法列表（对象能够接收的消息列表，保存在它所对应的类对象中）<br><strong>·</strong>    成员变量的列表,<br><strong>·</strong>    属性列表,</p>
-<p>它内部也有一个isa指针指向元对象(meta class),元对象内部存放的是类方法列表,类对象内部还有一个superclass的指针,指向他的父类对象。</p>
-
       
     </div>
     
@@ -452,6 +289,10 @@
       
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2016/03/23/iOS面试题/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -501,50 +342,7 @@
 <p> <strong>一、KVO简介</strong></p>
 <p>KVO 全称 Key-Value Observing。中文叫键值观察。KVO其实是一种观察者模式，观察者在键值改变时会得到通知,利用它可以很容易实现视图组件和数据模型的分离，当数据模型的属性值改变之后作为监听器的视图组件就会被激发，激发时就会回调监听器自身。相比Notification，KVO更加的简单直接。</p>
 <p>KVO的操作方法由NSKeyValueCoding提供，而他是NSObject的类别，也就是说ObjC中几乎所有的对象都支持KVO操作。</p>
-<p><strong>二、运用键值观察</strong><br>KVO的使用就是简单的三步曲:</p>
-<p> <strong>1、注册需要观察的对象的属性</strong><br> 如果我们已经有了包含可供键值观察属性的类，那么就可以通过在该类的对象(被观察者)上调用名为NSKeyValueObserverRegistration 的category方法将观察者对象与被观察者对象注册</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(void *)context;</span><br></pre></td></tr></table></figure>
-<p> <strong>2、 处理变更通知</strong><br> 观察者需要实现名为 NSKeyValueObserving 的 category 方法来处理收到的变更通知：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;</span><br></pre></td></tr></table></figure>
-<p>实现observeValueForKeyPath:ofObject:change:context:方法，这个方法当观察的属性变化时会自动调用.在这个方法中还通过NSKeyValueObservingOptionNew这个参数要求把新值在dictionary中传递过来。</p>
-<p><strong>3、取消注册需要观察的对象</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)removeObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath;</span><br></pre></td></tr></table></figure>
-<p><em>示例程序:</em><br><em>main.m</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">// key - valued - observer 键值观察</span><br><span class="line"></span><br><span class="line">//1、注册被观察者</span><br><span class="line">//2、观察者接收被观察者值的变化</span><br><span class="line">//3、不使用时一定记得remove掉</span><br><span class="line"></span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &lt;objc/runtime.h&gt;</span><br><span class="line">#import &quot;Person.h&quot;</span><br><span class="line">#import &quot;Watcher.h&quot;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        </span><br><span class="line">        Person * p = [[Person alloc] init];</span><br><span class="line">        Watcher * w = [[Watcher alloc] init];</span><br><span class="line">        p.watcher = w;</span><br><span class="line">        p.age = 20;</span><br><span class="line">        NSLog(@&quot;%@&quot;,p);</span><br><span class="line"></span><br><span class="line">        [p registerObserver];</span><br><span class="line">        p.age = 12;</span><br><span class="line">        NSLog(@&quot;%@&quot;,p);</span><br><span class="line">        p.age = 30;</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><em>Person.h</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &quot;Watcher.h&quot;</span><br><span class="line"></span><br><span class="line">@interface Person : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic, assign) int age;</span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) Watcher * watcher;</span><br><span class="line"></span><br><span class="line">- (void)registerObserver;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><em>Person.m</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">- (NSString *)description &#123;</span><br><span class="line">    </span><br><span class="line">     return [NSString stringWithFormat:@&quot;%s&quot;, object_getClassName(self)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)registerObserver &#123;</span><br><span class="line">    </span><br><span class="line">    [self addObserver:self.watcher forKeyPath:@&quot;age&quot; options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:nil];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)dealloc &#123;</span><br><span class="line">    </span><br><span class="line">    [self removeObserver:self.watcher forKeyPath:@&quot;age&quot;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><em>Watcher.h</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface Watcher : NSObject</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><em>Watcher.m</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Watcher.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Watcher</span><br><span class="line"></span><br><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSString *,id&gt; *)change context:(void *)context &#123;</span><br><span class="line">    </span><br><span class="line">    if ([keyPath isEqualToString:@&quot;age&quot;]) &#123;</span><br><span class="line">        </span><br><span class="line">        NSLog(@&quot;%@&quot;,change[@&quot;new&quot;]);</span><br><span class="line">        </span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        </span><br><span class="line">        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p>运行结果:<br><img src="http://img.blog.csdn.net/20160104153446768" alt="这里写图片描述"></p>
-<p>思考，当被观察者属性重写设置，但值并没有改变，每次设置都会触发KVO，如果有多次设置重复设置相同的数值呢？那么需要手动设置KVO。</p>
-<p><strong>三、手动实现键值观察KVO</strong><br><em>示例程序:</em><br><em>main.m</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &lt;objc/runtime.h&gt;</span><br><span class="line">#import &quot;Person.h&quot;</span><br><span class="line">#import &quot;Watcher.h&quot;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        </span><br><span class="line">        Person * p = [[Person alloc] init];</span><br><span class="line">        Watcher * w = [[Watcher alloc] init];</span><br><span class="line">        p.watcher = w;</span><br><span class="line">        p.age = 20;</span><br><span class="line">        NSLog(@&quot;%@&quot;,p);</span><br><span class="line"></span><br><span class="line">        [p registerObserver];</span><br><span class="line">        p.age = 12;</span><br><span class="line">        NSLog(@&quot;%@&quot;,p);</span><br><span class="line">        p.age = 12;</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><em>Person.h</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &quot;Watcher.h&quot;</span><br><span class="line"></span><br><span class="line">@interface Person : NSObject</span><br><span class="line"></span><br><span class="line">//KVO 需要实现setter/getter方法</span><br><span class="line">@property (nonatomic, assign) int age;</span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) Watcher * watcher;</span><br><span class="line"></span><br><span class="line">- (void)registerObserver;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
-<p>Person.m</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key &#123;</span><br><span class="line">    </span><br><span class="line">    BOOL automatic = YES;</span><br><span class="line">    if ([key isEqualToString:@&quot;age&quot;]) &#123;</span><br><span class="line">        automatic = NO;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        automatic = [super automaticallyNotifiesObserversForKey:key];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return automatic;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)setAge:(int)age &#123;</span><br><span class="line">    </span><br><span class="line">    //手动设置KVO</span><br><span class="line">    </span><br><span class="line">    if (_age != age) &#123;</span><br><span class="line">        </span><br><span class="line">        [self willChangeValueForKey:@&quot;age&quot;];</span><br><span class="line">        </span><br><span class="line">        _age = age;</span><br><span class="line">        </span><br><span class="line">        [self didChangeValueForKey:@&quot;age&quot;];</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSString *)description &#123;</span><br><span class="line">    </span><br><span class="line">    return [NSString stringWithFormat:@&quot;%s&quot;, object_getClassName(self)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><em>Watcher.h</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface Watcher : NSObject</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><em>Watcher.m</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Watcher.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Watcher</span><br><span class="line"></span><br><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSString *,id&gt; *)change context:(void *)context &#123;</span><br><span class="line">    </span><br><span class="line">    if ([keyPath isEqualToString:@&quot;age&quot;]) &#123;</span><br><span class="line">        </span><br><span class="line">        NSLog(@&quot;%@&quot;,change[@&quot;new&quot;]);</span><br><span class="line">        </span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        </span><br><span class="line">        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p>执行结果:<br><img src="http://img.blog.csdn.net/20160104155623586" alt="这里写图片描述"></p>
-<p>首先，需要手动实现属性的 setter 方法，并在设置操作的前后分别调用 willChangeValueForKey: 和 didChangeValueForKey方法，这两个方法用于通知系统该 key 的属性值即将和已经变更了；</p>
-<p>其次，要实现类方法 automaticallyNotifiesObserversForKey，并在其中设置对该 key 不自动发送通知（返回 NO 即可）。这里要注意，对其它非手动实现的 key，要转交给 super 来处理。</p>
-<p><strong>四、键值观察实现原理:</strong></p>
-<p>键值观察用处很多，Core Binding 背后的实现就有它的身影，那键值观察背后的实现又如何呢？想一想在上面的自动实现方式中，我们并不需要在被观察对象 Target 中添加额外的代码，就能获得键值观察的功能，这很好很强大，这是怎么做到的呢？答案就是 Objective C 强大的 runtime 动态能力，下面我们一起来窥探下其内部实现过程。</p>
-<p>当某个类的对象第一次被观察时，系统就会在运行期动态地创建该类的一个派生类，在这个派生类中重写基类中任何被观察属性的 setter 方法。</p>
-<p>派生类在被重写的 setter 方法实现真正的通知机制，就如前面手动实现键值观察那样。这么做是基于设置属性会调用 setter 方法，而通过重写就获得了 KVO 需要的通知机制。当然前提是要通过遵循 KVO 的属性设置方式来变更属性值，如果仅是直接修改属性对应的成员变量，是无法实现 KVO 的。</p>
-<p>同时派生类还重写了 class 方法以“欺骗”外部调用者它就是起初的那个类。然后系统将这个对象的 isa 指针指向这个新诞生的派生类，因此这个对象就成为该派生类的对象了，因而在该对象上对 setter 的调用就会调用重写的 setter，从而激活键值通知机制。此外，派生类还重写了 dealloc 方法来释放资源。</p>
-<p>简单的说主要是因为KVO的实现使用了isa-swizzling。在程序运行时Person会生成一个派生类NSKVONotifying_Person，在这个派生类中重写基类中任何被观察属性的setter方法，用来欺骗系统顶替原先的类。在setter方法中实现真正的通知机制.</p>
-<p><strong>苹果官方给出的原理简介:</strong></p>
-<p><img src="http://img.blog.csdn.net/20160104160540746" alt="这里写图片描述"></p>
-<p>苹果官方KVO文档：</p>
-<blockquote>
-<p><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html</a></p>
-</blockquote>
-
+<p><strong>二、运用键值观察</strong><br>KVO的使用就是简单的三步曲:<br>
       
     </div>
     
@@ -553,6 +351,10 @@
       
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2016/01/04/键值观察KVO详解/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -603,10 +405,6 @@
 <li>还有就是可以在这个pch文件中放入宏，在整个工程中都可以用</li>
 <li>例如在一个项目中有一个hello.h文件，需要在所有.m文件中都要包含这个文件就可以在XX_Prefix.pch文件中引入hello.h</li>
 </ul>
-<p><strong>具体配置过程:</strong><br>在项目里的Build Setting中选择combine，并在输入框中输入prefix，下面进行pch文件路径配置<br><img src="http://img.blog.csdn.net/20160115132659080" alt="这里写图片描述"><br><img src="http://img.blog.csdn.net/20160115132715276" alt="这里写图片描述"></p>
-<p><strong><em>注意: $(SRCROOT)/后面是项目的相对路径。</em></strong></p>
-<p>最后，编译下工程，Build Success，发现公共的头文件或者宏定义只需要在pch文件中导入了就好使。</p>
-
       
     </div>
     
@@ -615,6 +413,10 @@
       
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2015/12/23/iOS开发技巧第一弹-PCH文件配置/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -662,49 +464,7 @@
 <p><img src="http://img.blog.csdn.net/20160224094356252" alt="storyboard面板"></p>
 <p><img src="http://img.blog.csdn.net/20160224094512037" alt="运行结果"></p>
 <p><img src="http://img.blog.csdn.net/20160224094538835" alt="storyboard所拖拽的Tabbar所属自定义类"></p>
-<p><strong>自定义一个可视化类</strong></p>
-<p><em>LLuTabBarTintColor.h</em></p>
-<pre><code>#import &lt;UIKit/UIKit.h&gt;
-
-IB_DESIGNABLE  // 动态刷新
-
-@interface LLuTabBarTintColor : UITabBar
-
-// 注意: 加上IBInspectable就可以可视化显示相关的属性哦
-
-/** 可视化tabBar点击时颜色 */
-@property (nonatomic, strong)IBInspectable UIColor *TabBartintColor;
-
-@end`
-</code></pre><p><em>LLuTabBarTintColor.m</em></p>
-<pre><code>#import &quot;LLuTabBarTintColor.h&quot;
-
-@implementation LLuTabBarTintColor
-
-/**
- *  设置tabBar的tintColor
- *
- *  @param TabBartintColor 可视化视图传入的值
- */
-- (void)setTabBartintColor:(UIColor *)TabBartintColor {
-
-    self.tintColor = TabBartintColor;
-}
-
-@end
-</code></pre><p><strong>使用方法</strong></p>
-<p>IB_DESIGNABLE</p>
-<pre><code>使用方法：在swift里，@IBDesignable关键字写在class前即可。 
-在OC里，是IB_DESIGNABLE这个关键字，写在@implementation前即可 
-IBInspectable 
-主要作用：使view内的变量可视化，并且可以修改后马上看到
-</code></pre><p>IBInspectable</p>
-<pre><code>使用方法：在swift里，@IBInspectable关键字写在需要显示的变量前即可 
-在OC里，是IBInspectable这个关键字，写在需要显示的变量前即可 
-另外附两个快捷键： 
-command+shift+O，快速打开需要的文件 
-control+shift+鼠标左击sb，可以选择需要的sb活着view
-</code></pre>
+<p><strong>自定义一个可视化类</strong><br>
       
     </div>
     
@@ -713,6 +473,10 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
       
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2015/10/12/文章标题/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -821,61 +585,7 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
 <p>Objective-C作为一门面向对象语言，有类和对象的概念。编译后，类相关的数据结构会保留在目标文件中，在运行时得到解析和使用。在应用程序运行起来的时候，类的信息会有加载和初始化过程。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+ (void)load;</span><br><span class="line">+ (void)initialize;</span><br></pre></td></tr></table></figure>
 <p>都是以“+”开头的类方法，返回为空。通常情况下，我们在开发过程中可能不必关注这两个方法。如果有需要定制，我们可以在自定义的NSObject子类中给出这两个方法的实现，这样在类的加载和初始化过程中，自定义的方法可以得到调用。</p>
-<p><strong>下面整理下细节:</strong></p>
-<p><strong>1、load和initialize的共同特点</strong></p>
-<p>load和initialize有很多共同特点，下面简单列一下：</p>
-<ol>
-<li>在不考虑开发者主动使用的情况下，系统最多会调用一次</li>
-<li>如果父类和子类都被调用，父类的调用一定在子类之前</li>
-<li>都是为了应用运行提前创建合适的运行环境</li>
-<li>在使用时都不要过重地依赖于这两个方法，除非真正必要</li>
-</ol>
-<p><strong>2、load方法相关要点</strong></p>
-<p>废话不多说，直接上要点列表：</p>
-<ol>
-<li>调用时机比较早，运行环境有不确定因素。具体说来，在iOS上通常就是App启动时进行加载，但当load调用的时候，并不能保证所有类都加载完成且可用，必要时还要自己负责做auto release处理。</li>
-<li>补充上面一点，对于有依赖关系的两个库中，被依赖的类的load会优先调用。但在一个库之内，调用顺序是不确定的。</li>
-<li>对于一个类而言，没有load方法实现就不会调用，不会考虑对NSObject的继承。</li>
-<li>一个类的load方法不用写明[super load]，父类就会收到调用，并且在子类之前。</li>
-<li>Category的load也会收到调用，但顺序上在主类的load调用之后。<br>不会直接触发initialize的调用。</li>
-</ol>
-<p>示例程序:<br><em>Person.m</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">//当程序载入是自动调用，所有项目引用的类都会执行load,load区别于其他的方法。不用[super load],load一个类只会调用一次。load做一些初始化，load不能写太多代码，runtime method swing。类别的load一定是原先类的后面调用到。</span><br><span class="line"></span><br><span class="line">+ (void)load &#123;</span><br><span class="line">    </span><br><span class="line">    NSLog(@&quot;%s&quot;,__FUNCTION__);   </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
-<p><em>Student.h</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@interface Student : Person</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
-<p><em>Student.m</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Student.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Student</span><br><span class="line"></span><br><span class="line">+ (void)load &#123;</span><br><span class="line">    </span><br><span class="line">    NSLog(@&quot;%s&quot;,__FUNCTION__);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><strong>Person类的类别</strong><br><em>Person+Ext.h</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person+Ext.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Person (Ext)</span><br><span class="line"></span><br><span class="line">+ (void)load &#123;</span><br><span class="line">    </span><br><span class="line">    NSLog(@&quot;%s&quot;,__FUNCTION__);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
-<p><em>执行结果:</em><br><img src="http://img.blog.csdn.net/20160103131211442" alt="这里写图片描述"><br>个人开发经验：load中写一些runtime的东西，runtime method swing，它是用来替代系统自带的一些东西。</p>
-<p><strong>3、initialize方法相关要点</strong></p>
-<p>同样，直接整理要点：</p>
-<ol>
-<li>initialize的自然调用是在第一次主动使用当前类的时候（相当于懒加载）。</li>
-<li>在initialize方法收到调用时，运行环境基本健全。</li>
-<li>initialize的运行过程中是能保证线程安全的。</li>
-<li>initialize一个类只调用一次。</li>
-<li>和load不同，即使子类不实现initialize方法，会把父类的实现继承过来调用一遍。注意的是在此之前，父类的方法已经被执行过一次了，同样不需要super调用[super initialize]。</li>
-</ol>
-<p><em>由于initialize的这些特点，使得其应用比load要略微广泛一些。可用来做一些初始化工作，或者单例模式的一种实现方案。</em></p>
-<p>示例程序:<br><em>main.m</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &quot;Person.h&quot;</span><br><span class="line">#import &quot;Student.h&quot;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">               </span><br><span class="line">        Person * p = [[Person alloc] init];</span><br><span class="line">        Person * p1 = [[Person alloc] init];</span><br><span class="line">        Person * p2 = [[Person alloc] init];</span><br><span class="line">        Person * p3 = [[Person alloc] init];</span><br><span class="line"></span><br><span class="line">        Student * stu = [[Student alloc] init];</span><br><span class="line">        Student * stu1 = [[Student alloc] init];</span><br><span class="line">        Student * stu2 = [[Student alloc] init];</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><em>Person.m</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">+ (void)initialize &#123;</span><br><span class="line">    </span><br><span class="line">    NSLog(@&quot;%@，%s&quot;, [self class], __func__);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><em>Student.h</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@interface Student : Person</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><em>Student.m</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Student.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Student</span><br><span class="line"></span><br><span class="line">+ (void)initialize &#123;</span><br><span class="line"></span><br><span class="line">    if ([self class] == [Person class]) &#123;</span><br><span class="line">            NSLog(@&quot;%@，%s&quot;, [self class], __func__);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p><em>执行结果：</em><br><img src="http://img.blog.csdn.net/20160103132923243" alt="这里写图片描述"><br>当Student首次执行时，先执行父类的initialize方法，自身类再次执行initialize方法，所以应该进行一次判断，父类的initialize方法才不会多次执行。</p>
-<p> <strong>4、原理</strong></p>
-<p>“源码面前没有秘密”。最后，我们来看看苹果开放出来的部分源码。从中我们也许能明白为什么load和initialize及调用会有如上的一些特点。</p>
-<p>其中load是在objc库中一个load_images函数中调用的，先把二进制映像文件中的头信息取出，再解析和读出各个模块中的类定义信息，把实现了load方法的类和Category记录下来，最后统一执行调用。</p>
-<p>其中的prepare_load_methods函数实现如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">void prepare_load_methods(header_info *hi)</span><br><span class="line">&#123;</span><br><span class="line">    Module mods;</span><br><span class="line">    unsigned int midx;</span><br><span class="line">    if (_objcHeaderIsReplacement(hi)) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    mods = hi-&gt;mod_ptr;</span><br><span class="line">    for (midx = 0; midx &lt; hi-&gt;mod_count; midx += 1)</span><br><span class="line">    &#123;</span><br><span class="line">        unsigned int index;</span><br><span class="line">  </span><br><span class="line">        if (mods[midx].symtab == nil)</span><br><span class="line">            continue;</span><br><span class="line">  </span><br><span class="line">        for (index = 0; index &lt; mods[midx].symtab-&gt;cls_def_cnt; index += 1)</span><br><span class="line">        &#123;</span><br><span class="line">            Class cls = (Class)mods[midx].symtab-&gt;defs[index];</span><br><span class="line">            if (cls-&gt;info &amp; CLS_CONNECTED) &#123;</span><br><span class="line">                schedule_class_load(cls);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    mods = hi-&gt;mod_ptr;</span><br><span class="line">  </span><br><span class="line">    midx = (unsigned int)hi-&gt;mod_count;</span><br><span class="line">    while (midx-- &gt; 0) &#123;</span><br><span class="line">        unsigned int index;</span><br><span class="line">        unsigned int total;</span><br><span class="line">        Symtab symtab = mods[midx].symtab;</span><br><span class="line">  </span><br><span class="line">        if (mods[midx].symtab == nil)</span><br><span class="line">            continue;</span><br><span class="line">        total = mods[midx].symtab-&gt;cls_def_cnt +</span><br><span class="line">            mods[midx].symtab-&gt;cat_def_cnt;</span><br><span class="line">  </span><br><span class="line">        index = total;</span><br><span class="line">        while (index-- &gt; mods[midx].symtab-&gt;cls_def_cnt) &#123;</span><br><span class="line">            old_category *cat = (old_category *)symtab-&gt;defs[index];</span><br><span class="line">            add_category_to_loadable_list((Category)cat);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>这大概就是主类中的load方法先于category的原因。再看下面这段：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">static void schedule_class_load(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    if (cls-&gt;info &amp; CLS_LOADED) return;</span><br><span class="line">    if (cls-&gt;superclass) schedule_class_load(cls-&gt;superclass);</span><br><span class="line">    add_class_to_loadable_list(cls);</span><br><span class="line">    cls-&gt;info |= CLS_LOADED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>这正是父类load方法优先于子类调用的原因。</strong></p>
-<p><strong>再来看下initialize调用相关的源码。objc的库里有一个_class_initialize方法实现，如下：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">void _class_initialize(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    assert(!cls-&gt;isMetaClass());</span><br><span class="line">  </span><br><span class="line">    Class supercls;</span><br><span class="line">    BOOL reallyInitialize = NO;</span><br><span class="line">  </span><br><span class="line">    supercls = cls-&gt;superclass;</span><br><span class="line">    if (supercls  &amp;&amp;  !supercls-&gt;isInitialized()) &#123;</span><br><span class="line">        _class_initialize(supercls);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    monitor_enter(&amp;classInitLock);</span><br><span class="line">    if (!cls-&gt;isInitialized() &amp;&amp; !cls-&gt;isInitializing()) &#123;</span><br><span class="line">        cls-&gt;setInitializing();</span><br><span class="line">        reallyInitialize = YES;</span><br><span class="line">    &#125;</span><br><span class="line">    monitor_exit(&amp;classInitLock);</span><br><span class="line">  </span><br><span class="line">    if (reallyInitialize) &#123;</span><br><span class="line">        _setThisThreadIsInitializingClass(cls);</span><br><span class="line">  </span><br><span class="line">        if (PrintInitializing) &#123;</span><br><span class="line">            _objc_inform(&quot;INITIALIZE: calling +[%s initialize]&quot;,</span><br><span class="line">                         cls-&gt;nameForLogging());</span><br><span class="line">        &#125;</span><br><span class="line">  </span><br><span class="line">        ((void(*)(Class, SEL))objc_msgSend)(cls, SEL_initialize);</span><br><span class="line">  </span><br><span class="line">        if (PrintInitializing) &#123;</span><br><span class="line">            _objc_inform(&quot;INITIALIZE: finished +[%s initialize]&quot;,</span><br><span class="line">                         cls-&gt;nameForLogging());</span><br><span class="line">        &#125;</span><br><span class="line">  </span><br><span class="line">        monitor_enter(&amp;classInitLock);</span><br><span class="line">        if (!supercls  ||  supercls-&gt;isInitialized()) &#123;</span><br><span class="line">            _finishInitializing(cls, supercls);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            _finishInitializingAfter(cls, supercls);</span><br><span class="line">        &#125;</span><br><span class="line">        monitor_exit(&amp;classInitLock);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    else if (cls-&gt;isInitializing()) &#123;</span><br><span class="line">        if (_thisThreadIsInitializingClass(cls)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            monitor_enter(&amp;classInitLock);</span><br><span class="line">            while (!cls-&gt;isInitialized()) &#123;</span><br><span class="line">                monitor_wait(&amp;classInitLock);</span><br><span class="line">            &#125;</span><br><span class="line">            monitor_exit(&amp;classInitLock);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    else if (cls-&gt;isInitialized()) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    else &#123;</span><br><span class="line">        _objc_fatal(&quot;thread-safe class init in objc runtime is buggy!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在这段代码里，我们能看到initialize的调用顺序和线程安全性。</p>
-
+<p><strong>下面整理下细节:</strong><br>
       
     </div>
     
@@ -884,6 +594,10 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
       
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2015/08/26/load和initialize方法详解/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
