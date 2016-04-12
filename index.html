@@ -123,7 +123,7 @@
 				<section class="switch-part switch-part3">
 					<div id="js-friends">
 					
-			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">习大大大不同</a>
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.yuzhouheike.github.io">宇宙黑客王磊磊的博客</a>
 			        
 			        </div>
 				</section>
@@ -762,46 +762,6 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
 <p>1.方法一：<br>安装<strong>homebrew</strong>，然后通过<strong>homebrew</strong>安装Git。</p>
 <p>第一步：在终端输入如下命令安装<strong>homebrew</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</span><br></pre></td></tr></table></figure>
-<p>第二步：执行下面的命令，通过<strong>Homebrew</strong>安装Git。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ brew install git</span><br></pre></td></tr></table></figure>
-<p>具体方法请参考<strong>homebrew</strong>的文档：<a href="http://brew.sh/" target="_blank" rel="external">http://brew.sh/</a><br><em>Homebrew 用Ruby语言开发，支持千余种开源软件在 Mac OS X 中的部署和管理。</em><br>2.方法二：</p>
-<p>直接去git官网下载就好 <a href="http://git-scm.com/downloads/" target="_blank" rel="external">http://git-scm.com/downloads/</a></p>
-<p><strong>使用Git</strong></p>
-<p>通常使用git创建版本库，又叫仓库。<br>第一步：在合适的地方创建一个目录。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir firstgit</span><br><span class="line"></span><br><span class="line">$ cd firstgit</span><br></pre></td></tr></table></figure>
-<p>第二步：用 <strong>git init</strong> 命令将这个目录变成可以使用git管理的仓库。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git init</span><br><span class="line">Initialized empty Git repository in /Users/dahuan/Desktop/MultithreadingDemo/.git/</span><br></pre></td></tr></table></figure>
-<p>执行 <strong>ls -a</strong> 会发现目录里多<strong>.git</strong>文件，这个就是<strong>git</strong>用来跟踪管理的文件。</p>
-<p>第三步：在这个目录下创建个文件，并输入一些内容。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi readme.txt</span><br></pre></td></tr></table></figure>
-<p>第四步：用命令git add告诉Git，把文件添加到仓库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git add readme.txt</span><br></pre></td></tr></table></figure>
-<p><em>如果要添加的文件太多可以这么写 git add -a</em></p>
-<p>第五步：用命令git commit把文件提交到仓库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git commit -m &quot;wrote a readme file&quot;</span><br></pre></td></tr></table></figure>
-<p>至此我们已经成功地添加并提交了一个readme.txt文件到本地仓库。</p>
-<p><strong>将本地仓库提交到远程仓库github</strong></p>
-<p>完全可以自己搭建一台运行Git的服务器，不过现阶段，为了学Git先搭个服务器绝对是小题大作。好在这个世界上有个叫GitHub的神奇的网站，从名字就可以看出，这个网站就是提供Git仓库托管服务的，所以，只要注册一个GitHub账号，就可以免费获得Git远程仓库。</p>
-<p>在继续阅读后续内容前，请自行注册GitHub账号。由于你的本地Git仓库和GitHub仓库之间的传输是通过SSH加密的，所以，需要一点设置：</p>
-<p>创建SSH Key。在用户主目录下，看看有没有.ssh目录，如果有，再看看这个目录下有没有id_rsa和id_rsa.pub这两个文件，如果已经有了，可直接跳到下一步。如果没有，打开Shell（Windows下打开Git Bash），创建SSH Key：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;xxxxx@xxxxx.com&quot;</span><br></pre></td></tr></table></figure>
-<p>查看你的public key</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">cat ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
-<p>登陆GitHub，打开“Account settings”，然后，点“Add SSH Key”，填上任意Title，在Key文本框里粘贴id_rsa.pub文件的内容。点“Add Key”，你就应该看到已经添加的Key。为了验证是否成功。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-<p>如果是第一次的会提示是否continue，输入yes就会看到：You’ve successfully authenticated, but GitHub does not provide shell access 。这就表示已成功连上github。</p>
-<p>接下来我们要做的就是把本地仓库传到github上去，在此之前还需要设置username和email，因为github每次commit都会记录他们。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name &quot;your name&quot;</span><br><span class="line">$ git config --global user.email &quot;your_email@youremail.com&quot;</span><br></pre></td></tr></table></figure>
-<p>为什么GitHub需要SSH Key呢？因为GitHub需要识别出你推送的提交确实是你推送的，而不是别人冒充的，而Git支持SSH协议，所以，GitHub只要知道了你的公钥，就可以确认只有你自己才能推送。</p>
-<p>登陆GitHub，然后，在右上角找到“Create a new repo”按钮，创建一个新的仓库。<br>在Repository name填入firstgit，其他保持默认设置，点击“Create repository”按钮，就成功地创建了一个新的Git仓库。</p>
-<p>现在，我们根据GitHub的提示，在本地的firstgit仓库下运行命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git remote add origin git@github.xxxx/xxxx.git</span><br></pre></td></tr></table></figure>
-<p><em>origin是默认的主机名</em><br><em>git@github.xxxx/xxxx.git是网址</em></p>
-<p>这样我们就在本地.git上设置了远程主机。</p>
-<p>我们使用下面的命令推送本地仓库至远程仓库：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git push -u origin master</span><br></pre></td></tr></table></figure>
-<p><em>master 是本地主机的默认分支名。</em></p>
-
       
     </div>
     
@@ -810,6 +770,10 @@ control+shift+鼠标左击sb，可以选择需要的sb活着view
       
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2015/09/16/Git使用教程/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
