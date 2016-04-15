@@ -6,27 +6,25 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>UIStackView | 李大大大帅</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="UIStackView本文转自：iOS 9 新增 UIStackView 官方文档翻译
+  <meta name="description" content="本文转自：iOS 9 新增 UIStackView 官方文档翻译
 示例Demo纯代码：Github
 示例Demo SB版：Github
 Demo效果图：
-
 一、继承关系、遵守协议、隶属框架及可用平台先看下官方文档吧：
 `
-The UIStackView class provides a streamlined interface for laying out a collec">
+The UIStackView class provides a streamlined interface for laying out a collection of view">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UIStackView">
 <meta property="og:url" content="http://www.lidalu1125.cn/2016/04/15/UIStackView详解/index.html">
 <meta property="og:site_name" content="李大大大帅">
-<meta property="og:description" content="UIStackView本文转自：iOS 9 新增 UIStackView 官方文档翻译
+<meta property="og:description" content="本文转自：iOS 9 新增 UIStackView 官方文档翻译
 示例Demo纯代码：Github
 示例Demo SB版：Github
 Demo效果图：
-
 一、继承关系、遵守协议、隶属框架及可用平台先看下官方文档吧：
 `
-The UIStackView class provides a streamlined interface for laying out a collec">
-<meta property="og:image" content="http://www.lidalu1125.cn/Users/mac/Desktop/LLu_UIKit/UIStackView/UIStackView纯代码/UIStackViewDemo效果图.gif">
+The UIStackView class provides a streamlined interface for laying out a collection of view">
+<meta property="og:image" content="http://img.blog.csdn.net/20160415141854946">
 <meta property="og:image" content="http://images0.cnblogs.com/blog2015/490613/201506/130105390356699.png">
 <meta property="og:image" content="http://images0.cnblogs.com/blog2015/490613/201506/130054395519774.png">
 <meta property="og:image" content="http://images0.cnblogs.com/blog2015/490613/201506/130143123632995.png">
@@ -35,18 +33,17 @@ The UIStackView class provides a streamlined interface for laying out a collec">
 <meta property="og:image" content="http://images0.cnblogs.com/blog2015/490613/201506/140110013482874.png">
 <meta property="og:image" content="http://images0.cnblogs.com/blog2015/490613/201506/140122324105787.png">
 <meta property="og:image" content="http://images0.cnblogs.com/blog2015/490613/201506/140146204108925.png">
-<meta property="og:updated_time" content="2016-04-15T07:57:57.000Z">
+<meta property="og:updated_time" content="2016-04-15T08:02:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UIStackView">
-<meta name="twitter:description" content="UIStackView本文转自：iOS 9 新增 UIStackView 官方文档翻译
+<meta name="twitter:description" content="本文转自：iOS 9 新增 UIStackView 官方文档翻译
 示例Demo纯代码：Github
 示例Demo SB版：Github
 Demo效果图：
-
 一、继承关系、遵守协议、隶属框架及可用平台先看下官方文档吧：
 `
-The UIStackView class provides a streamlined interface for laying out a collec">
-<meta name="twitter:image" content="http://www.lidalu1125.cn/Users/mac/Desktop/LLu_UIKit/UIStackView/UIStackView纯代码/UIStackViewDemo效果图.gif">
+The UIStackView class provides a streamlined interface for laying out a collection of view">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160415141854946">
   
     <link rel="alternative" href="/atom.xml" title="李大大大帅" type="application/atom+xml">
   
@@ -251,11 +248,10 @@ The UIStackView class provides a streamlined interface for laying out a collec">
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="UIStackView"><a href="#UIStackView" class="headerlink" title="UIStackView"></a>UIStackView</h1><p>本文转自：<a href="http://www.cocoachina.com/ios/20150617/12151.html" target="_blank" rel="external">iOS 9 新增 UIStackView 官方文档翻译</a></p>
+        <p>本文转自：<a href="http://www.cocoachina.com/ios/20150617/12151.html" target="_blank" rel="external">iOS 9 新增 UIStackView 官方文档翻译</a></p>
 <p>示例Demo纯代码：<a href="https://github.com/Lidalu/UIStackView" target="_blank" rel="external">Github</a></p>
 <p>示例Demo SB版：<a href="https://github.com/Lidalu/UIStackViewDemo-SB" target="_blank" rel="external">Github</a></p>
-<p>Demo效果图：</p>
-<p><img src="/Users/mac/Desktop/LLu_UIKit/UIStackView/UIStackView纯代码/UIStackViewDemo效果图.gif" alt="image"></p>
+<p>Demo效果图：<br><img src="http://img.blog.csdn.net/20160415141854946" alt="UIStackView"></p>
 <h3 id="一、继承关系、遵守协议、隶属框架及可用平台"><a href="#一、继承关系、遵守协议、隶属框架及可用平台" class="headerlink" title="一、继承关系、遵守协议、隶属框架及可用平台"></a>一、继承关系、遵守协议、隶属框架及可用平台</h3><p><img src="http://images0.cnblogs.com/blog2015/490613/201506/130105390356699.png" alt="image"><br>先看下官方文档吧：</p>
 <p>`</p>
 <pre><code>The UIStackView class provides a streamlined interface for laying out a collection of views in either a column or a row. Stack views let you leverage the power of Auto Layout, creating user interfaces that can dynamically adapt to the device’s orientation, screen size, and any changes in the available space. The stack view manages the layout of all the views in its arrangedSubviews property. These views are arranged along the stack view’s axis, based on their order in the arrangedSubviews array. The exact layout varies depending on the stack view’s axis, distribution, alignment, spacing, and other properties.`
